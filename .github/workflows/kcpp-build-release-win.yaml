@@ -111,6 +111,29 @@ jobs:
         run: |
           make LLAMA_VULKAN=1 LLAMA_PORTABLE=1 -j ${env:NUMBER_OF_PROCESSORS}
 
+      # --- ВСТАВИТЬ ЭТОТ БЛОК СЮДА ---
+      - name: Upload DLLs as soon as ready
+        uses: actions/upload-artifact@v6
+        with:
+          name: kcpp_windows_dlls_early
+          path: |
+            koboldcpp_common.dll
+            koboldcpp_default.dll
+            koboldcpp_noavx2.dll
+            koboldcpp_failsafe.dll
+            koboldcpp_vulkan.dll
+            koboldcpp_vulkan_noavx2.dll
+            koboldcpp_vulkan_noext_shaders.dll
+            koboldcpp_vulkan_shaders.dll
+            koboldcpp_vulkan_failsafe.dll
+            backend_routes/koboldcpp_default/koboldcpp_backend.dll
+            backend_routes/koboldcpp_vulkan/koboldcpp_backend.dll
+            backend_routes/koboldcpp_noavx2/koboldcpp_backend.dll
+            backend_routes/koboldcpp_vulkan_noavx2/koboldcpp_backend.dll
+            backend_routes/koboldcpp_failsafe/koboldcpp_backend.dll
+            backend_routes/koboldcpp_vulkan_failsafe/koboldcpp_backend.dll
+      # -------------------------------
+
       - name: Build CUDA
         id: cmake_build
         run: |
@@ -131,6 +154,17 @@ jobs:
           copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\cublasLt64_12.dll" .
           copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.1\bin\cublas64_12.dll" .
           ls
+
+      # --- ВСТАВИТЬ ЭТОТ БЛОК СЮДА ---
+      - name: Copy DLLs to backend_routes
+        shell: pwsh
+        run: |
+          $backends = 'koboldcpp_default', 'koboldcpp_failsafe', 'koboldcpp_noavx2', 'koboldcpp_vulkan', 'koboldcpp_vulkan_noavx2', 'koboldcpp_vulkan_failsafe'
+          foreach ($b in $backends) {
+            New-Item -ItemType Directory -Force -Path "backend_routes\$b" | Out-Null
+            Copy-Item "$b.dll" "backend_routes\$b\koboldcpp_backend.dll"
+          }
+      # -------------------------------
 
       - name: Package PyInstallers
         id: make_pyinstaller
