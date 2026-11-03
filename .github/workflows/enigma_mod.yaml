@@ -129,7 +129,7 @@ jobs:
           # curl -Lf https://github.com/Zontomoka5934/koboldcpp_1.124.1/releases/download/dll_1.124.1/nikogreen.ico --output nikogreen.ico
           # curl -Lf https://github.com/Zontomoka5934/koboldcpp_1.124.1/releases/download/dll_1.124.1/enigma_mod_make.bat --output enigma_mod_make.bat
 
-      # --- Копируем dll d gfgre backend_routes ---
+      # --- Копируем dll в папку backend_routes ---
       - name: Copy DLLs to backend_routes
         shell: pwsh
         run: |
